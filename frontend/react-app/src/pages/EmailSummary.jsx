@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext.jsx';
 const WORKSPACES = ['Work', 'Personal'];
 
 export default function EmailSummary() {
-  const { t, state, visible, navigate } = useApp();
+  const { t, data, visible, navigate } = useApp();
 
   return (
     <div>
@@ -16,7 +16,7 @@ export default function EmailSummary() {
         {WORKSPACES.filter(visible).map(space => (
           <section className="card" key={space}>
             <h2>{t(space)}</h2>
-            <p>{state.analysis?.[space] || t('No summary for this workspace yet.')}</p>
+            <p>{data.briefing.summaries?.[space.toUpperCase()] || t('No summary for this workspace yet.')}</p>
           </section>
         ))}
         <div>
