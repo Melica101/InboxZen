@@ -1,4 +1,6 @@
 import React from 'react';
+import logo from '../assets/inboxzen-logo.jpg';
+import mark from '../assets/inboxzen-mark.jpg';
 import { useApp } from '../context/AppContext.jsx';
 import {
   LayoutDashboard, Mail, CheckSquare, AlertTriangle,
@@ -33,10 +35,10 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       {/* Brand */}
-      <div className="brand">
-        <div className="brand-logo">✦</div>
-        <span className="brand-name">InboxZen</span>
-      </div>
+      <picture className="brand">
+        <source media="(max-width: 860px)" srcSet={mark} />
+        <img src={logo} alt="InboxZen" />
+      </picture>
 
       {/* Main nav */}
       <div className="sidebar-label">WORKSPACE</div>

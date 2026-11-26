@@ -65,7 +65,7 @@ export default function RiskRadar() {
             <p className="muted" style={{ marginTop: 4 }}>{state.resolved ? 'Confirmed Thursday' : 'Delayed until Monday'}</p>
           </div>
           <span className="muted">↓</span>
-          <div className="dep-node" style={{ background: '#fff4e2' }}>
+          <div className="dep-node" style={{ background: 'var(--brand-orange-tint)' }}>
             <h3>Engineering proposal</h3>
             <p className="muted" style={{ marginTop: 4 }}>{state.resolved ? 'Ready to proceed' : 'Blocked by IT'}</p>
           </div>

@@ -23,7 +23,7 @@ export default function Commitments() {
               <input
                 type="checkbox"
                 checked={!!t.done}
-                style={{ accentColor: '#6a55dc', width: 16, height: 16 }}
+                style={{ accentColor: 'var(--brand-primary)', width: 16, height: 16 }}
                 onChange={() => setState(s => ({
                   ...s,
                   tasks: s.tasks.map((x, j) => j === i ? { ...x, done: !x.done } : x),

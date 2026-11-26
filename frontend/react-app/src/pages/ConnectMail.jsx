@@ -20,7 +20,7 @@ function ProviderLogo({ provider, size = 32 }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: 10,
-      background: p?.color || '#6a55dc',
+      background: p?.color || 'var(--brand-primary)',
       display: 'grid', placeItems: 'center',
       fontSize: size * 0.5, flexShrink: 0,
       color: '#fff',
@@ -234,7 +234,7 @@ export default function ConnectMail() {
                       key={p.id}
                       onClick={() => handleProviderChoose(p)}
                       style={{
-                        border: '1.5px solid #e5e6ef',
+                        border: '1.5px solid var(--brand-line)',
                         borderRadius: 14,
                         padding: '18px 16px',
                         background: '#fff',
@@ -245,8 +245,8 @@ export default function ConnectMail() {
                         gap: 10,
                         transition: 'border-color .15s, box-shadow .15s',
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = '#6a55dc'; e.currentTarget.style.boxShadow = '0 0 0 3px #6a55dc18'; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#e5e6ef'; e.currentTarget.style.boxShadow = 'none'; }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--brand-primary)'; e.currentTarget.style.boxShadow = '0 0 0 3px var(--brand-focus)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--brand-line)'; e.currentTarget.style.boxShadow = 'none'; }}
                     >
                       <ProviderLogo provider={p.id} size={40} />
                       <span style={{ fontWeight: 650, fontSize: 13 }}>{p.label}</span>

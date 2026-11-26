@@ -64,12 +64,12 @@ export default function ProfilePage() {
           <div className="card" style={{ textAlign: 'center', padding: 24 }}>
             <div style={{ position: 'relative', display: 'inline-block', marginBottom: 14 }}>
               {user.avatar ? (
-                <img src={user.avatar} alt="avatar" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid #edeaff' }} />
+                <img src={user.avatar} alt="avatar" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--brand-blue-tint)' }} />
               ) : (
                 <div style={{
                   width: 80, height: 80, borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #e3deff, #c5b8f9)',
-                  color: '#5d49c7', display: 'grid', placeItems: 'center',
+                  background: 'var(--brand-avatar)',
+                  color: 'var(--brand-blue-ink)', display: 'grid', placeItems: 'center',
                   fontSize: 28, fontWeight: 750,
                 }}>
                   {initials}
@@ -79,7 +79,7 @@ export default function ProfilePage() {
                 onClick={() => fileRef.current?.click()}
                 style={{
                   position: 'absolute', bottom: 0, right: 0,
-                  background: '#6a55dc', color: '#fff',
+                  background: 'var(--brand-primary)', color: '#fff',
                   border: '2px solid #fff', borderRadius: '50%',
                   width: 26, height: 26, display: 'grid', placeItems: 'center',
                   cursor: 'pointer',
@@ -104,8 +104,8 @@ export default function ProfilePage() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10,
                   width: '100%', padding: '10px 16px',
-                  border: 0, background: tab === key ? '#edeaff' : 'none',
-                  color: tab === key ? '#5d49c7' : '#6b6f88',
+                  border: 0, background: tab === key ? 'var(--brand-blue-tint)' : 'none',
+                  color: tab === key ? 'var(--brand-blue-ink)' : '#6b6f88',
                   fontWeight: tab === key ? 650 : 400,
                   borderRadius: 8, fontSize: 13,
                   cursor: 'pointer', textAlign: 'left',

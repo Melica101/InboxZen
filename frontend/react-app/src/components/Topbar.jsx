@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext.jsx';
 import { X } from 'lucide-react';
 
 export default function Topbar() {
-  const { state, setSpace, notice, setNotice } = useApp();
+  const { state, navigate, setSpace, notice, setNotice } = useApp();
 
   const initials = state.user.name
     .split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -24,7 +24,14 @@ export default function Topbar() {
         </div>
         <div className="row">
           <span className="chip green">● Demo mode</span>
-          <div className="avatar" style={{ cursor: 'default' }}>{initials}</div>
+          <button
+            type="button"
+            className="avatar avatar-button"
+            aria-label="Profile settings"
+            onClick={() => navigate('Profile')}
+          >
+            {state.user.avatar ? <img src={state.user.avatar} className="avatar" alt="" /> : initials}
+          </button>
         </div>
       </header>
       {notice && (

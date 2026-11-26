@@ -1,4 +1,4 @@
-# StandBy AI — Hackathon MVP
+# InboxZen — Hackathon MVP
 
 ## Run locally
 Requires Node.js 20.12+ (22 recommended). No dependencies or npm install required.
