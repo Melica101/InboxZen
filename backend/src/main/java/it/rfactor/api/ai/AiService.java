@@ -181,7 +181,11 @@ public class AiService {
 
     private <T> T parse(String s, Class<T> type) {
         try {
-            return json.readValue(s, type);
+            var v = json.readValue(s, type);
+            if (v == null) throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "AI returned no content");
+            return v;
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "AI returned malformed JSON");
         }

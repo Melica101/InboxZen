@@ -9,7 +9,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import it.rfactor.api.model.*;
 import it.rfactor.api.repo.Events;
@@ -56,10 +58,13 @@ public class CalendarService {
         var start = busyEnd.plus(1, ChronoUnit.HOURS);
         for (int i = 0; i < 48; i++, start = start.plus(30, ChronoUnit.MINUTES)) {
             var end = start.plus(len);
-            var s = start;
-            var free = events.findByUserIdAndStartAtLessThanAndEndAtGreaterThan(uid, end, s, BY_START).stream().allMatch(o -> o.id.equals(ev.id));
-            if (free) return new Instant[] {start, end};
+            if (isFree(uid, start, end, ev.id)) return new Instant[] {start, end};
         }
-        throw new IllegalStateException("no free slot");
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "No free slot in the next 24 hours");
+    }
+
+    /** True when nothing except `ignoreId` overlaps [start, end). */
+    public boolean isFree(Long uid, Instant start, Instant end, Long ignoreId) {
+        return events.findByUserIdAndStartAtLessThanAndEndAtGreaterThan(uid, end, start, BY_START).stream().allMatch(o -> o.id.equals(ignoreId));
     }
 }

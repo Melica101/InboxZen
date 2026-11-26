@@ -37,8 +37,8 @@ class DemoController {
     Map<String, Integer> addEmails(Principal p, @RequestParam(defaultValue = "100") int count) {
         if (count < 1 || count > 1000) throw Api.bad("count must be between 1 and 1000");
         var uid = Api.uid(p);
-        emails.saveAll(DemoMail.generate(uid, count, System.nanoTime(), calendar.zone(), calendar.today()));
-        logs.log(uid, Space.WORK, "Loaded %d synthetic emails".formatted(count));
-        return Map.of("added", count, "total", (int) emails.countByUserId(uid));
+        var batch = emails.saveAll(DemoMail.generate(uid, count, System.nanoTime(), calendar.zone(), calendar.today()));
+        logs.log(uid, Space.WORK, "Loaded %d synthetic emails".formatted(batch.size()));
+        return Map.of("added", batch.size(), "total", (int) emails.countByUserId(uid));
     }
 }

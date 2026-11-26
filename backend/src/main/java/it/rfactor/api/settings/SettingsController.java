@@ -19,7 +19,7 @@ import jakarta.validation.constraints.NotNull;
 @RestController
 @RequestMapping("/api/settings")
 class SettingsController {
-    record SettingsDto(boolean analyzeWork, boolean analyzePersonal, boolean crossCalendar, @NotNull Autonomy autonomy) {}
+    record SettingsDto(@NotNull Boolean analyzeWork, @NotNull Boolean analyzePersonal, @NotNull Boolean crossCalendar, @NotNull Autonomy autonomy) {}
 
     private final Users users;
 
