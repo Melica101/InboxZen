@@ -1,9 +1,30 @@
 server:
   port: 8080
 
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:h2:file:./data/inboxzen}
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate.ddl-auto: update   # ponytail: swap for Flyway when moving to Postgres
+    open-in-view: false
+  jackson:
+    mapper:
+      accept-case-insensitive-enums: true
+  mvc:
+    problemdetails.enabled: true   # errors as RFC 7807 JSON
+  http:
+    client:
+      connect-timeout: 5s
+      read-timeout: 60s            # Azure calls
+
 app:
   # frontend origins allowed by CORS (comma separated)
   cors-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:5173,http://localhost:4200}
+  jwt-secret: ${JWT_SECRET:}       # >= 32 bytes; blank = random per start
+  seed-volume: ${SEED_VOLUME:150}   # extra synthetic emails per new account / reset (0 = just the 7 story emails)
+  zone: ${APP_ZONE:Europe/Rome}    # used to place seeded events/emails "today"
 
 azure:
   openai:
