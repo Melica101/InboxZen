@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useApp } from '../context/AppContext.jsx';
 import { X } from 'lucide-react';
 
 export default function ActionModal() {
-  const { modal, setModal, state, setState, setNotice } = useApp();
+  const { t: translate, modal, setModal, state, setState, setNotice } = useApp();
   if (!modal) return null;
 
   const isConflict = modal === 'conflict';
@@ -34,28 +34,27 @@ export default function ActionModal() {
 
   return (
     <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && setModal('')}>
-      <div className="modal">
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="action-title">
         <div className="row between" style={{ marginBottom: 18 }}>
-          <h2>{isConflict ? 'Resolve scheduling conflict' : 'Review escalation'}</h2>
-          <button className="btn btn-link" onClick={() => setModal('')}><X size={18} /></button>
+          <h2 id="action-title">{isConflict ? translate("Resolve scheduling conflict") : translate("Review escalation")}</h2>
+          <button className="btn btn-link" aria-label={translate("Close")} onClick={() => setModal('')}><X size={18} /></button>
         </div>
         <div className="email-tile">
-          <strong>To: {isConflict ? 'Acme project team' : 'Engineering and IT'}</strong>
+          <strong>{translate("To: {recipient}", { recipient: translate(isConflict ? "Acme project team" : "Engineering and IT") })}</strong>
           <p style={{ marginTop: 8, color: '#555' }}>
             {isConflict
-              ? 'Hi everyone, I am unavailable at 15:00. Would 16:30 work instead?'
-              : "Hi team, the IT delay threatens Friday's client proposal. Can we agree on an accelerated delivery or contingency plan today?"}
+              ? translate("Hi everyone, I am unavailable at 15:00. Would 16:30 work instead?")
+              : translate("Hi team, the IT delay threatens Friday's client proposal. Can we agree on an accelerated delivery or contingency plan today?")}
           </p>
         </div>
         <div className="privacy-note">
           {isConflict
-            ? 'Only free/busy information used. No personal details included.'
-            : 'Sources: three work emails. No personal data included.'}
+            ? translate("Only free/busy information used. No personal details included.")
+            : translate("Sources: three work emails. No personal data included.")}
         </div>
         <div className="row" style={{ marginTop: 20, justifyContent: 'flex-end', gap: 10 }}>
-          <button className="btn btn-secondary" onClick={() => setModal('')}>Cancel</button>
-          <button className="btn btn-primary" onClick={handleConfirm}>
-            Approve simulated {isConflict ? 'reschedule' : 'send'}
+          <button className="btn btn-secondary" onClick={() => setModal('')}>{translate("Cancel")}</button>
+          <button className="btn btn-primary" onClick={handleConfirm}>{translate(isConflict ? "Approve simulated reschedule" : "Approve simulated send")}
           </button>
         </div>
       </div>
