@@ -8,18 +8,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import it.rfactor.api.model.User;
 import it.rfactor.api.repo.Users;
 
-/** Creates the empty demo account on startup if missing. Mails are added via scripts/load_emails.py. */
+/** On every startup: creates the demo account if missing and resets it to the pre-analysis demo state (full mailbox, nothing analyzed). */
 @Configuration
 class DbInit {
     static final String EMAIL = "demo@inboxzen.test", PASSWORD = "test";
 
     @Bean
-    ApplicationRunner initDemoUser(Users users, PasswordEncoder encoder) {
+    ApplicationRunner initDemoUser(Users users, PasswordEncoder encoder, Seeder seeder) {
         return args -> {
-            if (users.findByEmailIgnoreCase(EMAIL).isPresent()) return;
-            var u = new User();
-            u.email = EMAIL; u.name = "Demo User"; u.passwordHash = encoder.encode(PASSWORD);
-            users.save(u);
+            var u = users.findByEmailIgnoreCase(EMAIL).orElseGet(() -> {
+                var n = new User();
+                n.email = EMAIL; n.name = "Demo User"; n.passwordHash = encoder.encode(PASSWORD);
+                return users.save(n);
+            });
+            seeder.seedMailbox(u.id);
         };
     }
 }

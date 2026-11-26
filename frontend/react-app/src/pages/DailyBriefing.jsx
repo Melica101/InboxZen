@@ -1,48 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext.jsx';
 import { TrendingUp, AlertTriangle, Clock } from 'lucide-react';
 
+const STEPS = ['Reading emails…', 'Prioritizing messages…', 'Extracting commitments…', 'Mapping dependencies…', 'Detecting risks…'];
+const STEP_MS = 1000;
+
 export default function DailyBriefing() {
-  const { t: translate, demoDate, state, setState, setNotice, busy, setBusy, visible } = useApp();
+  const { t: translate, demoDate, state, setNotice, data, act, busy } = useApp();
+  const { metrics } = data.briefing;
+  const hasRisk = metrics.activeRisks > 0;
 
-  const openTasks = state.tasks.filter(t => visible(t.space) && !t.done).length;
-  const hasRisk   = visible('Work') && !state.resolved;
+  const [step, setStep] = useState(-1); // -1 = idle, else index into STEPS
 
-  async function analyzeEmails() {
-    if (busy) return;
-    setBusy(true);
-    setNotice('');
+  // The backend answers instantly in demo mode: the animation sets the pace so the result feels computed.
+  const analyzeEmails = () => act(async () => {
+    const q = state.space === 'All' ? '' : '?space=' + state.space.toLowerCase();
+    const anim = (async () => { for (let i = 0; i < STEPS.length; i++) { setStep(i); await new Promise(r => setTimeout(r, STEP_MS)); } })();
     try {
-      const emails = [
-      { id: 'W1', space: 'Work', from: 'Elena · Acme', subject: 'Final proposal by Friday', body: 'Please deliver the final proposal by November 27 to proceed with the €150,000 opportunity.', priority: 'Critical' },
-      { id: 'W2', space: 'Work', from: 'Marco · Engineering', subject: 'Proposal dependency', body: 'We cannot finish the proposal until IT delivers infrastructure specifications.', priority: 'Action required' },
-      { id: 'W3', space: 'Work', from: 'Luca · IT', subject: 'Infrastructure delay', body: 'Specifications will not be available until Monday, November 30.', priority: 'Risk signal' },
-      ];
-      let results = [];
-      for (const [i, space] of ['Work', 'Personal'].entries()) {
-        if (!visible(space) || !state.settings[i]) continue;
-        const r = await fetch('/api/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ space, emails: emails.filter(e => e.space === space) }),
-        });
-        const j = await r.json();
-        if (!r.ok) throw new Error(j.error);
-        if (j.mode === 'live') setState(s => ({ ...s, analysis: { ...s.analysis, [space]: j.analysis } }));
-        results.push(j.mode);
-        setState(s => ({ ...s, logs: [...s.logs, { space, text: `${j.mode === 'live' ? 'Live AI' : 'Demo'} analysis completed` }] }));
-      }
-      if (results.length) {
-        setNotice('Analysis complete: {results}.', { results });
-      } else {
-        setNotice('No enabled workspace to analyze.');
-      }
-    } catch {
-      setNotice('Analysis failed.');
-    } finally {
-      setBusy(false);
-    }
-  }
+      const [rs] = await Promise.all([api('/ai/analyze' + q, 'POST'), anim]);
+      if (!rs.length) return 'No enabled workspace to analyze.';
+      setNotice('Analysis complete: {results}.', { results: rs.map(r => r.mode) });
+    } finally { setStep(-1); }
+  });
 
   return (
     <div>
@@ -61,6 +40,14 @@ export default function DailyBriefing() {
         <button className="btn btn-secondary" style={{ marginTop: 16 }} onClick={analyzeEmails} disabled={busy}>
           {busy ? translate("Analyzing…") : translate("Analyze emails")}
         </button>
+        {step >= 0 && (
+          <div style={{ marginTop: 14, maxWidth: 360 }} role="status" aria-live="polite">
+            <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,.25)', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${((step + 1) / STEPS.length) * 100}%`, background: '#fff', transition: `width ${STEP_MS}ms linear` }} />
+            </div>
+            <div style={{ marginTop: 8, fontSize: 13 }}>{translate(STEPS[step])}</div>
+          </div>
+        )}
       </div>
 
       {/* Metrics */}

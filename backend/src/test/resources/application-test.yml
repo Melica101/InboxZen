@@ -4,3 +4,4 @@ spring:
 app:
   jwt-secret: test-secret-test-secret-test-secret-123
   seed-volume: 0
+  demo-analysis: false

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.rfactor.api.model.*;
 import it.rfactor.api.repo.*;
+import it.rfactor.api.workspace.Seeder;
 
 /**
  * AI pipeline on Gemini. Email text is untrusted: it is only ever sent as data, the model can only
@@ -67,9 +68,13 @@ public class AiService {
     private final Users users; private final Emails emails; private final Commitments commitments; private final Risks risks;
     private final Runs runs; private final Logs logs;
     private final ZoneId zone;
+    private final Seeder seeder;
+    private final boolean demoAnalysis;
 
     AiService(GeminiClient gemini, ObjectMapper json, TransactionTemplate tx, Users users, Emails emails, Commitments commitments,
-              Risks risks, Runs runs, Logs logs, @Value("${app.zone}") String zone) {
+              Risks risks, Runs runs, Logs logs, @Value("${app.zone}") String zone, Seeder seeder,
+              @Value("${app.demo-analysis:false}") boolean demoAnalysis) {
+        this.seeder = seeder; this.demoAnalysis = demoAnalysis;
         this.gemini = gemini; this.json = json; this.tx = tx; this.users = users; this.emails = emails;
         this.commitments = commitments; this.risks = risks; this.runs = runs; this.logs = logs;
         this.zone = ZoneId.of(zone);
@@ -81,6 +86,11 @@ public class AiService {
     public Result analyze(Long uid, Space space) {
         var user = users.findById(uid).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         if (!user.canAnalyze(space)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Analysis of " + space + " is disabled in settings");
+        if (demoAnalysis) { // hardcoded result for demos, no model call
+            seeder.demoAnalyze(uid, space);
+            logs.log(uid, space, "Demo analysis completed");
+            return result(uid, space, "demo");
+        }
         if (!gemini.configured()) {
             logs.log(uid, space, "Demo analysis completed (AI not configured)");
             return result(uid, space, "demo");
