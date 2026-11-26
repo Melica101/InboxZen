@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+app:
+  # frontend origins allowed by CORS (comma separated)
+  cors-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:5173,http://localhost:4200}
+
+azure:
+  openai:
+    endpoint: ${AZURE_OPENAI_ENDPOINT:}       # https://<resource>.openai.azure.com
+    api-key: ${AZURE_OPENAI_API_KEY:}         # never commit, set as env var
+    deployment: ${AZURE_OPENAI_DEPLOYMENT:}   # deployment name, e.g. gpt-4o
+    api-version: ${AZURE_OPENAI_API_VERSION:2024-10-21}
