@@ -1,10 +1,12 @@
 import http from 'node:http';
 import {readFile} from 'node:fs/promises';
-import {existsSync} from 'node:fs';
+import {existsSync,statSync} from 'node:fs';
 if(existsSync('.env')) process.loadEnvFile('.env');
 const port=Number(process.env.PORT||3000);
 const backend=process.env.BACKEND_URL||'http://localhost:8080';
-const files={'/':['index.html','text/html'],'/app.js':['app.js','text/javascript'],'/style.css':['style.css','text/css']};
+const dist=new URL('./react-app/dist/',import.meta.url);
+const isFile=u=>existsSync(u)&&statSync(u).isFile();
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.jpg':'image/jpeg','.svg':'image/svg+xml','.ico':'image/x-icon'};
 const json=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data))};
 // /api/* is proxied to the Spring backend: same origin for the browser, no CORS. Only auth/content-type/body are forwarded.
 async function proxy(req,res){
@@ -18,7 +20,12 @@ async function proxy(req,res){
 http.createServer(async(req,res)=>{
   try{
     if(req.url.startsWith('/api/'))return await proxy(req,res);
-    const file=files[req.url];if(req.method!=='GET'||!file)return json(res,404,{detail:'Not found'});
-    res.writeHead(200,{'Content-Type':file[1],'X-Content-Type-Options':'nosniff'});res.end(await readFile(new URL('./public/'+file[0],import.meta.url)));
+    if(req.method!=='GET')return json(res,404,{detail:'Not found'});
+    // static files from the React build; any other path falls back to index.html (SPA)
+    const path=new URL(req.url,'http://x').pathname;
+    let rel=path==='/'?'index.html':path.slice(1);
+    if(rel.includes('..')||!isFile(new URL(rel,dist)))rel=path.startsWith('/assets/')?'':'index.html';
+    if(!rel)return json(res,404,{detail:'Not found'});
+    res.writeHead(200,{'Content-Type':types[rel.slice(rel.lastIndexOf('.'))]||'application/octet-stream','X-Content-Type-Options':'nosniff'});res.end(await readFile(new URL(rel,dist)));
   }catch{json(res,500,{detail:'Unable to process request'})}
-}).listen(port,'127.0.0.1',()=>console.log(`StandBy running at http://localhost:${port} → backend ${backend}`));
+}).listen(port,'127.0.0.1',()=>console.log(`InboxZen running at http://localhost:${port} → backend ${backend}`));

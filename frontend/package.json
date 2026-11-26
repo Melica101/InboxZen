@@ -1,1 +1,1 @@
-{"name":"standby-ai","version":"1.0.0","private":true,"type":"module","scripts":{"start":"node server.mjs","dev":"node --watch server.mjs"},"engines":{"node":">=20"}}
+{"name":"inboxzen","version":"1.0.0","private":true,"type":"module","scripts":{"start":"node server.mjs","dev":"node --watch server.mjs","build":"npm --prefix react-app run build"},"engines":{"node":">=20"}}
