@@ -38,14 +38,23 @@ public class GeminiClient {
         var body = new java.util.HashMap<String, Object>(Map.of("model", props.model(), "messages", messages));
         if (json) body.put("response_format", Map.of("type", "json_object"));
         var url = props.baseUrl().replaceAll("/+$", "") + "/chat/completions";
-        try {
-            var res = http.post().uri(url).header("Authorization", "Bearer " + props.apiKey()).body(body).retrieve().body(Completion.class);
-            return res.choices().get(0).message().content();
-        } catch (org.springframework.web.client.RestClientResponseException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Gemini error " + e.getStatusCode().value());
-        } catch (RestClientException e) { // timeout / connection
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Gemini unreachable");
+        // ponytail: Gemini returns transient 503/429 under load; retry 3x with a short backoff, then give up
+        for (int attempt = 1; ; attempt++) {
+            try {
+                var res = http.post().uri(url).header("Authorization", "Bearer " + props.apiKey()).body(body).retrieve().body(Completion.class);
+                return res.choices().get(0).message().content();
+            } catch (org.springframework.web.client.RestClientResponseException e) {
+                int code = e.getStatusCode().value();
+                if (attempt < 3 && (code == 503 || code == 429)) { pause(attempt * 2000L); continue; }
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Gemini error " + code);
+            } catch (RestClientException e) { // timeout / connection
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Gemini unreachable");
+            }
         }
+    }
+
+    private static void pause(long ms) {
+        try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
     }
 
     record Completion(List<Choice> choices) {}
