@@ -1,6 +1,6 @@
 package it.rfactor.api;
 
-import it.rfactor.api.ai.AzureClient;
+import it.rfactor.api.ai.GeminiClient;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import it.rfactor.api.ai.AzureClient;
+import it.rfactor.api.ai.GeminiClient;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,7 +29,7 @@ import it.rfactor.api.ai.AzureClient;
 class ApiTest {
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper json;
-    @MockitoBean AzureClient azure;
+    @MockitoBean GeminiClient gemini;
 
     static final AtomicInteger N = new AtomicInteger();
 
@@ -80,8 +80,8 @@ class ApiTest {
     }
 
     @Test
-    void analyzeWithoutAzureIsDemoAndKeepsData() throws Exception {
-        when(azure.configured()).thenReturn(false);
+    void analyzeWithoutGeminiIsDemoAndKeepsData() throws Exception {
+        when(gemini.configured()).thenReturn(false);
         var t = register();
         var r = call(t, post("/api/ai/analyze"));
         org.junit.jupiter.api.Assertions.assertEquals(2, r.size());
@@ -99,7 +99,7 @@ class ApiTest {
 
     @Test
     void hallucinatedSourceIdsAreDroppedAndAiRowsPersisted() throws Exception {
-        when(azure.configured()).thenReturn(true);
+        when(gemini.configured()).thenReturn(true);
         var t = register();
         var emails = call(t, get("/api/emails?space=work"));
         long real = emails.get(0).get("id").asLong();
@@ -109,7 +109,7 @@ class ApiTest {
                                 {"title":"Invented","owner":"X","due":"?","status":"Blocked","sourceIds":[999999]}],
                  "risks":[{"title":"R","explanation":"e","severity":"high","status":"open","sourceIds":[%d],"chain":[{"title":"a","detail":"b"}]}]}
                 """.formatted(real, real, real);
-        when(azure.chatJson(any(), any())).thenReturn(reply);
+        when(gemini.chatJson(any(), any())).thenReturn(reply);
         var res = call(t, post("/api/ai/analyze?space=work")).get(0);
         org.junit.jupiter.api.Assertions.assertEquals("live", res.get("mode").asText());
         org.junit.jupiter.api.Assertions.assertEquals(1, res.get("commitments").size());
@@ -121,14 +121,14 @@ class ApiTest {
 
     @Test
     void malformedAiJsonIs502() throws Exception {
-        when(azure.configured()).thenReturn(true);
-        when(azure.chatJson(any(), any())).thenReturn("not json");
+        when(gemini.configured()).thenReturn(true);
+        when(gemini.chatJson(any(), any())).thenReturn("not json");
         mvc.perform(as(register(), post("/api/ai/analyze?space=work"))).andExpect(status().isBadGateway());
     }
 
     @Test
     void rescheduleFlowRespectsAutonomyAndMovesEvent() throws Exception {
-        when(azure.configured()).thenReturn(false);
+        when(gemini.configured()).thenReturn(false);
         var t = register();
         var conflict = call(t, get("/api/calendar/conflicts")).get(0);
         long eventId = conflict.get("workEvent").get("id").asLong();
@@ -172,8 +172,8 @@ class ApiTest {
     }
 
     @Test
-    void chatWithoutAzureKeyIs503() throws Exception {
-        when(azure.chat(any(), any())).thenThrow(new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE));
+    void chatWithoutGeminiKeyIs503() throws Exception {
+        when(gemini.chat(any(), any())).thenThrow(new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE));
         mvc.perform(as(register(), post("/api/ai/chat").contentType(MediaType.APPLICATION_JSON).content("{\"prompt\":\"hi\"}"))).andExpect(status().isServiceUnavailable());
         mvc.perform(as(register(), post("/api/ai/chat").contentType(MediaType.APPLICATION_JSON).content("{\"prompt\":\"\"}"))).andExpect(status().isBadRequest());
     }

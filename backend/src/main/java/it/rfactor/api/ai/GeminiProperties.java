@@ -2,9 +2,9 @@ package it.rfactor.api.ai;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("azure.openai")
-public record AzureProperties(String endpoint, String apiKey, String deployment, String apiVersion) {
+@ConfigurationProperties("gemini")
+public record GeminiProperties(String apiKey, String model, String baseUrl) {
     boolean configured() {
-        return !endpoint.isBlank() && !apiKey.isBlank() && !deployment.isBlank();
+        return !apiKey.isBlank() && !model.isBlank();
     }
 }

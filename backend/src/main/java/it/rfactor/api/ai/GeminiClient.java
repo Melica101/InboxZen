@@ -10,13 +10,13 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
-/** Azure OpenAI chat completions, authenticated with the `api-key` header. */
+/** Gemini via its OpenAI-compatible chat completions endpoint. */
 @Service
-public class AzureClient {
-    private final AzureProperties props;
+public class GeminiClient {
+    private final GeminiProperties props;
     private final RestClient http;
 
-    AzureClient(AzureProperties props, RestClient.Builder builder) {
+    GeminiClient(GeminiProperties props, RestClient.Builder builder) {
         this.props = props;
         this.http = builder.build();
     }
@@ -25,28 +25,26 @@ public class AzureClient {
 
     public String chat(String system, String prompt) { return complete(system, prompt, false); }
 
-    /** Forces a JSON object reply. The system prompt must mention "JSON" (Azure requirement). */
+    /** Forces a JSON object reply. The system prompt must mention "JSON". */
     public String chatJson(String system, String prompt) { return complete(system, prompt, true); }
 
     private String complete(String system, String prompt, boolean json) {
         if (!props.configured()) {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Azure not configured: set AZURE_OPENAI_* env vars");
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Gemini not configured: set GEMINI_API_KEY");
         }
         var messages = new ArrayList<Map<String, String>>();
         if (system != null && !system.isBlank()) messages.add(Map.of("role", "system", "content", system));
         messages.add(Map.of("role", "user", "content", prompt));
-        Map<String, Object> body = json
-                ? Map.of("messages", messages, "response_format", Map.of("type", "json_object"))
-                : Map.of("messages", messages);
-        var url = "%s/openai/deployments/%s/chat/completions?api-version=%s"
-                .formatted(props.endpoint().replaceAll("/+$", ""), props.deployment(), props.apiVersion());
+        var body = new java.util.HashMap<String, Object>(Map.of("model", props.model(), "messages", messages));
+        if (json) body.put("response_format", Map.of("type", "json_object"));
+        var url = props.baseUrl().replaceAll("/+$", "") + "/chat/completions";
         try {
-            var res = http.post().uri(url).header("api-key", props.apiKey()).body(body).retrieve().body(Completion.class);
+            var res = http.post().uri(url).header("Authorization", "Bearer " + props.apiKey()).body(body).retrieve().body(Completion.class);
             return res.choices().get(0).message().content();
         } catch (org.springframework.web.client.RestClientResponseException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Azure error " + e.getStatusCode().value());
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Gemini error " + e.getStatusCode().value());
         } catch (RestClientException e) { // timeout / connection
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Azure unreachable");
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Gemini unreachable");
         }
     }
 

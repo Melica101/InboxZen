@@ -17,7 +17,7 @@ spring:
   http:
     client:
       connect-timeout: 5s
-      read-timeout: 60s            # Azure calls
+      read-timeout: 60s            # Gemini calls
 
 app:
   # frontend origins allowed by CORS (comma separated)
@@ -26,9 +26,7 @@ app:
   seed-volume: ${SEED_VOLUME:150}   # extra synthetic emails per new account / reset (0 = just the 7 story emails)
   zone: ${APP_ZONE:Europe/Rome}    # used to place seeded events/emails "today"
 
-azure:
-  openai:
-    endpoint: ${AZURE_OPENAI_ENDPOINT:}       # https://<resource>.openai.azure.com
-    api-key: ${AZURE_OPENAI_API_KEY:}         # never commit, set as env var
-    deployment: ${AZURE_OPENAI_DEPLOYMENT:}   # deployment name, e.g. gpt-4o
-    api-version: ${AZURE_OPENAI_API_VERSION:2024-10-21}
+gemini:
+  api-key: ${GEMINI_API_KEY:}   # never commit, set as env var
+  model: ${GEMINI_MODEL:gemini-3.5-flash-lite}
+  base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai}
