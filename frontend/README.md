@@ -16,28 +16,20 @@ Managers receive a high volume of email every day and risk missing critical mess
 - **Deadline monitoring** — Send automatic reminders and alert users to missing replies.
 - **Task extraction** — Turn email threads into checklists of actionable next steps.
 
-## MVP focus
+## Product features
 
-| Area | Target | Current implementation |
-| --- | --- | --- |
-| Input | A simulated database of corporate email. | The demo uses synthetic email fixtures in source code and stores demo state in the browser. |
-| AI engine | An LLM trained to classify text and generate replies. | The optional Node endpoint prompts a hosted LLM to summarize batches and extract commitments and risks. Dedicated classification, reply generation, and project-specific model training are absent. |
-| Output | A Daily Briefing interface for quickly reviewing and acting on priorities. | The briefing shows a seeded risk, commitments, appointments, and proposed actions. |
-
-## Product features and current status
-
-| Feature | Intended behavior | Current implementation and gaps |
-| --- | --- | --- |
-| **Smart Inbox** | Automatically sort email by category, urgency, and relevance. | The inbox shows preassigned labels and filters by workspace. Automatic classification and sorting are missing. |
-| **Priority Engine** | Prioritize messages based on VIPs, the CEO, strategic clients, deadlines, and impact. | Sample messages have preset priorities. Dynamic scoring and end-of-day newsletter summaries are missing. |
-| **Daily Briefing** | Summarize the day's important emails, tasks, appointments, and critical issues. | The demo shows a preset scenario with a risk, tasks, appointments, and proposed actions. Automatic daily generation from incoming email is missing. |
-| **AI Email Summary** | Summarize individual emails and entire threads so users can grasp the essentials quickly. | The optional Node endpoint returns a summary per analyzed workspace batch, which the vanilla interface displays. The React interface stores the results without displaying them. Individual email and thread summaries are missing. |
-| **Task Extraction** | Turn emails into tasks with due dates, status, and clear calls to action. | The demo supports checking off seeded commitments. Live analysis can extract commitments with owners, deadlines, and source IDs. Turning those results into trackable checklist items is missing. |
-| **Meeting Assistant** | Detect meeting requests and draft calendar invitations. | The demo simulates resolving a preset calendar conflict. Detecting meeting requests and generating invitation drafts are missing. |
-| **Follow-up Tracker** | Track missing replies and suggest follow-up messages. | A preset escalation demonstrates the approval flow. Reply tracking, deadline alerts, and automatic reminders are missing. |
-| **AI Reply Drafts** | Generate context-aware replies that users can personalize and edit. | The demo shows fixed escalation and rescheduling messages. AI generation, personalization, and editing are missing. |
-| **Autonomy Center** | Make autonomy levels transparent with configurable permissions and approvals. | The Privacy Center lets users configure analysis and calendar coordination and choose an approval mode for simulated actions. Broader permission controls and backend policy enforcement are missing. |
-| **Activity & Alert Center** | Show a history of AI actions, notifications, deadlines, approvals, and reasons for decisions. | Agent Activity logs demo events, and Risk Radar shows the reasoning behind the seeded risk. A unified alerts and approvals view, durable history, and per-action decision explanations are missing. |
+| Feature | Description |
+| --- | --- |
+| **Daily Briefing** | Start here for a summary of the day's important emails, tasks, appointments, and critical issues. |
+| **Smart Inbox** | Automatically sort email by category, urgency, and relevance. |
+| **Priority Engine** | Prioritize messages based on VIPs, the CEO, strategic clients, deadlines, and impact. |
+| **AI Email Summary** | Summarize individual emails and entire threads so users can grasp the essentials quickly. |
+| **Task Extraction** | Turn emails into tasks with due dates, status, and clear calls to action. |
+| **Meeting Assistant** | Detect meeting requests and draft calendar invitations. |
+| **Follow-up Tracker** | Track missing replies and suggest follow-up messages. |
+| **AI Reply Drafts** | Generate context-aware replies that users can personalize and edit. |
+| **Autonomy Center** | Make autonomy levels transparent with configurable permissions and approvals. |
+| **Activity & Alert Center** | Show a history of AI actions, notifications, deadlines, approvals, and reasons for decisions. |
 
 ## React interface
 
@@ -63,5 +55,6 @@ Copy `.env.example` to `.env`, set `OPENAI_API_KEY` and optionally the model, th
 4. Calendar: resolve the work/personal conflict without revealing the private appointment.
 5. Privacy center: disable analysis or change approval mode. Reset demo to restart.
 
-## Architecture and limits
-Vanilla HTML/CSS/JS + dependency-free Node HTTP server. Synthetic data and demo state in browser localStorage; optional server-side LLM extraction. No real email/calendar integration, authentication, production security, actual agent actions, or shared database. Work/personal tabs and separate requests demonstrate the intended isolation model but are not actual security boundaries. Some future permission controls are disabled. AI outputs need validation before real use. No real customer data should be used. API key remains server-side. Local server binds to loopback only. For enterprise implementation, add OAuth, authenticated tenant isolation, a validated data model, policy enforcement, and a durable backend. 
+## Architecture
+
+InboxZen includes a React interface and a vanilla HTML/CSS/JS interface served by a dependency-free Node HTTP server. The demo uses synthetic email data and stores demo state in browser localStorage. Optional server-side AI analysis processes each workspace in a separate request. The API key stays on the server, which binds to loopback.

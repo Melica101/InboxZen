@@ -49,8 +49,8 @@ export default function DailyBriefing() {
       {/* Header */}
       <div className="page-header">
         <div className="eyebrow">{demoDate} · {translate("DEMO WORKSPACE")}</div>
-        <h1 className="page-title">{translate("Good morning, {name}.", { name: state.user.name.split(' ')[0] })}</h1>
-        <p className="page-desc">{translate("A little less noise. A lot more clarity.")}</p>
+        <h1 className="page-title">{translate("Daily Briefing")}</h1>
+        <p className="page-desc">{translate("Good morning, {name}.", { name: state.user.name.split(' ')[0] })}</p>
       </div>
 
       {/* Hero */}

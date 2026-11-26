@@ -17,7 +17,7 @@ export default function PrivacyCenter() {
     <div>
       <div className="page-header">
         <div className="eyebrow">{demoDate} · {translate("DEMO WORKSPACE")}</div>
-        <h1 className="page-title">{translate("Privacy center")}</h1>
+        <h1 className="page-title">{translate("Autonomy Center")}</h1>
         <p className="page-desc">{translate("Your data. Your boundaries. Your decisions.")}</p>
       </div>
 

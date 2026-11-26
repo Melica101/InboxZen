@@ -43,7 +43,7 @@ const INITIAL_STATE = {
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem('inboxzen-state') || '{}');
-    return { ...structuredClone(INITIAL_STATE), ...saved };
+    return { ...structuredClone(INITIAL_STATE), ...saved, page: INITIAL_STATE.page };
   } catch {
     return structuredClone(INITIAL_STATE);
   }

@@ -26,7 +26,7 @@ export default function RiskRadar() {
     <div>
       <div className="page-header">
         <div className="eyebrow">{demoDate} · {translate("DEMO WORKSPACE")}</div>
-        <h1 className="page-title">{translate("Risk radar")}</h1>
+        <h1 className="page-title">{translate("Follow-up Tracker")}</h1>
         <p className="page-desc">{translate("High-risk emails and what to do next.")}</p>
       </div>
 

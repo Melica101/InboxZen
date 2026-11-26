@@ -14,7 +14,7 @@ export default function CalendarPage() {
     <div>
       <div className="page-header">
         <div className="eyebrow">{demoDate} · {translate("DEMO WORKSPACE")}</div>
-        <h1 className="page-title">{translate("Your calendar")}</h1>
+        <h1 className="page-title">{translate("Meeting Assistant")}</h1>
         <p className="page-desc">{translate("One view, separate privacy boundaries.")}</p>
       </div>
 

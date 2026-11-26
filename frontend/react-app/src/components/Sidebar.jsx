@@ -4,17 +4,20 @@ import mark from '../assets/inboxzen-mark.jpg';
 import { useApp } from '../context/AppContext.jsx';
 import {
   LayoutDashboard, Mail, CheckSquare, AlertTriangle,
-  Calendar, Activity, Shield, Plug, User, LogOut,
+  Calendar, Activity, Shield, Plug, User, ListOrdered, FileText, PencilLine,
 } from 'lucide-react';
 
 const NAV = [
-  { key: 'Daily briefing',  Icon: LayoutDashboard, label: 'Daily briefing' },
-  { key: 'Smart inbox',     Icon: Mail,            label: 'Smart inbox',    badge: 7 },
-  { key: 'Commitments',     Icon: CheckSquare,     label: 'Commitments' },
-  { key: 'Risk radar',      Icon: AlertTriangle,   label: 'Risk radar',     badge: 1 },
-  { key: 'Calendar',        Icon: Calendar,        label: 'Calendar' },
-  { key: 'Agent activity',  Icon: Activity,        label: 'Agent activity' },
-  { key: 'Privacy center',  Icon: Shield,          label: 'Privacy center' },
+  { key: 'Daily briefing',   Icon: LayoutDashboard, label: 'Daily Briefing' },
+  { key: 'Smart inbox',      Icon: Mail,            label: 'Smart Inbox' },
+  { key: 'Priority Engine',  Icon: ListOrdered,     label: 'Priority Engine' },
+  { key: 'AI Email Summary', Icon: FileText,        label: 'AI Email Summary' },
+  { key: 'Commitments',      Icon: CheckSquare,     label: 'Task Extraction' },
+  { key: 'Calendar',         Icon: Calendar,        label: 'Meeting Assistant' },
+  { key: 'Risk radar',       Icon: AlertTriangle,   label: 'Follow-up Tracker' },
+  { key: 'AI Reply Drafts',  Icon: PencilLine,      label: 'AI Reply Drafts' },
+  { key: 'Privacy center',   Icon: Shield,          label: 'Autonomy Center' },
+  { key: 'Agent activity',   Icon: Activity,        label: 'Activity & Alert Center' },
 ];
 
 const BOTTOM_NAV = [
@@ -43,16 +46,17 @@ export default function Sidebar() {
       {/* Main nav */}
       <div className="sidebar-label">{translate("WORKSPACE")}</div>
       <nav>
-        {NAV.map(({ key, Icon, label, badge }) => (
+        {NAV.map(({ key, Icon, label }) => (
           <button
             key={key}
             className={`nav-btn ${state.page === key ? 'active' : ''}`}
             onClick={() => navigate(key)}
             title={translate(label)}
+            aria-label={translate(label)}
+            aria-current={state.page === key ? 'page' : undefined}
           >
             <Icon className="nav-icon" size={17} />
             <span>{translate(label)}</span>
-            {badge ? <span className="nav-badge">{badge}</span> : null}
           </button>
         ))}
       </nav>
@@ -66,6 +70,8 @@ export default function Sidebar() {
             className={`nav-btn ${state.page === key ? 'active' : ''}`}
             onClick={() => navigate(key)}
             title={translate(label)}
+            aria-label={translate(label)}
+            aria-current={state.page === key ? 'page' : undefined}
           >
             <Icon className="nav-icon" size={17} />
             <span>{translate(label)}</span>

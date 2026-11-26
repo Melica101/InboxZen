@@ -9,7 +9,7 @@ export default function Commitments() {
     <div>
       <div className="page-header">
         <div className="eyebrow">{demoDate} · {translate("DEMO WORKSPACE")}</div>
-        <h1 className="page-title">{translate("Commitment center")}</h1>
+        <h1 className="page-title">{translate("Task Extraction")}</h1>
         <p className="page-desc">{translate("Every promise, owner and deadline in one place.")}</p>
       </div>
 
