@@ -28,6 +28,8 @@ public class ActionService {
 
     public AgentAction escalation(Long uid, Long riskId) {
         var risk = Api.found(risks.findByIdAndUserId(riskId, uid));
+        var pending = actions.findFirstByUserIdAndRiskIdAndStatus(uid, riskId, ActionStatus.DRAFT);
+        if (pending.isPresent()) return pending.get(); // double click = same draft
         var d = ai.escalationDraft(risk, emails.findByUserIdAndIdIn(uid, risk.sourceIds));
         var a = draft(uid, risk.space, ActionType.ESCALATION, d);
         a.riskId = risk.id;
@@ -38,6 +40,13 @@ public class ActionService {
         var user = users.findById(uid).orElseThrow();
         if (!user.crossCalendar) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cross-calendar coordination is disabled in settings");
         var ev = Api.found(events.findByIdAndUserId(eventId, uid));
+        var pending = actions.findFirstByUserIdAndEventIdAndStatus(uid, eventId, ActionStatus.DRAFT);
+        if (pending.isPresent()) {
+            var p = pending.get();
+            if (calendar.isFree(uid, p.newStart, p.newEnd, ev.id)) return p;
+            p.status = ActionStatus.REJECTED; p.decidedAt = Instant.now(); // slot taken meanwhile: replace the stale draft
+            actions.save(p);
+        }
         if (ev.space != Space.WORK) throw Api.bad("Only work events can be rescheduled");
         var busyEnd = calendar.personalOverlaps(uid, ev).stream().map(p -> p.endAt).max(Comparator.naturalOrder())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT, "No conflict for this event"));
@@ -55,6 +64,7 @@ public class ActionService {
         }
         if (a.type == ActionType.RESCHEDULE) {
             var ev = Api.found(events.findByIdAndUserId(a.eventId, uid));
+            if (!calendar.isFree(uid, a.newStart, a.newEnd, ev.id)) throw new ResponseStatusException(HttpStatus.CONFLICT, "Proposed slot is no longer free: reject and draft again");
             ev.startAt = a.newStart; ev.endAt = a.newEnd;
         }
         a.status = ActionStatus.APPROVED; a.decidedAt = Instant.now();

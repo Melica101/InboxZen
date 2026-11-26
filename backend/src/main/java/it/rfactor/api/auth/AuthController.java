@@ -50,6 +50,7 @@ public class AuthController {
     @Transactional
     @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.CREATED)
     AuthResponse register(@Valid @RequestBody RegisterRequest r) {
+        if (r.password().getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password too long (max 72 bytes)");
         if (users.findByEmailIgnoreCase(r.email()).isPresent()) throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
         var u = new User();
         u.email = r.email().trim().toLowerCase();

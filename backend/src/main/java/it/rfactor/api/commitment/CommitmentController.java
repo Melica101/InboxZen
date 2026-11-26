@@ -45,7 +45,7 @@ class CommitmentController {
     @PatchMapping("/{id}")
     Commitment patch(Principal p, @PathVariable Long id, @Valid @RequestBody Patch r) {
         var c = Api.found(repo.findByIdAndUserId(id, Api.uid(p)));
-        if (r.title() != null) c.title = r.title();
+        if (r.title() != null) { if (r.title().isBlank()) throw Api.bad("title must not be blank"); c.title = r.title(); }
         if (r.owner() != null) c.owner = r.owner();
         if (r.due() != null) c.due = r.due();
         if (r.status() != null) c.status = status(r.status());

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import it.rfactor.api.model.*;
 import it.rfactor.api.repo.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 
 @RestController
@@ -43,7 +44,7 @@ class RiskController {
     /** Marks the risk mitigated and unblocks the commitments that depend on the same emails. */
     @PostMapping("/{id}/resolve")
     @Transactional
-    Risk resolve(Principal p, @PathVariable Long id, @RequestBody(required = false) Resolve body) {
+    Risk resolve(Principal p, @PathVariable Long id, @Valid @RequestBody(required = false) Resolve body) {
         var uid = Api.uid(p);
         var r = Api.found(risks.findByIdAndUserId(id, uid));
         r.status = RiskStatus.MITIGATED;
