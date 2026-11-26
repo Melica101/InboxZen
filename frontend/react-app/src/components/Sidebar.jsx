@@ -4,17 +4,20 @@ import mark from '../assets/inboxzen-mark.jpg';
 import { useApp } from '../context/AppContext.jsx';
 import {
   LayoutDashboard, Mail, CheckSquare, AlertTriangle,
-  Calendar, Activity, Shield, Plug, User, LogOut,
+  Calendar, Activity, Shield, Plug, User, ListOrdered, FileText, PencilLine,
 } from 'lucide-react';
 
 const NAV = [
-  { key: 'Daily briefing',  Icon: LayoutDashboard, label: 'Daily briefing' },
-  { key: 'Smart inbox',     Icon: Mail,            label: 'Smart inbox' },
-  { key: 'Commitments',     Icon: CheckSquare,     label: 'Commitments' },
-  { key: 'Risk radar',      Icon: AlertTriangle,   label: 'Risk radar' },
-  { key: 'Calendar',        Icon: Calendar,        label: 'Calendar' },
-  { key: 'Agent activity',  Icon: Activity,        label: 'Agent activity' },
-  { key: 'Privacy center',  Icon: Shield,          label: 'Privacy center' },
+  { key: 'Daily briefing',   Icon: LayoutDashboard, label: 'Daily Briefing' },
+  { key: 'Smart inbox',      Icon: Mail,            label: 'Smart Inbox' },
+  { key: 'Priority Engine',  Icon: ListOrdered,     label: 'Priority Engine' },
+  { key: 'AI Email Summary', Icon: FileText,        label: 'AI Email Summary' },
+  { key: 'Commitments',      Icon: CheckSquare,     label: 'Task Extraction' },
+  { key: 'Calendar',         Icon: Calendar,        label: 'Meeting Assistant' },
+  { key: 'Risk radar',       Icon: AlertTriangle,   label: 'Follow-up Tracker' },
+  { key: 'AI Reply Drafts',  Icon: PencilLine,      label: 'AI Reply Drafts' },
+  { key: 'Privacy center',   Icon: Shield,          label: 'Autonomy Center' },
+  { key: 'Agent activity',   Icon: Activity,        label: 'Activity & Alert Center' },
 ];
 
 const BOTTOM_NAV = [
@@ -23,7 +26,7 @@ const BOTTOM_NAV = [
 ];
 
 export default function Sidebar() {
-  const { state, data, navigate } = useApp();
+  const { t: translate, state, navigate } = useApp();
 
   const initials = state.user.name
     .split(' ')
@@ -41,37 +44,37 @@ export default function Sidebar() {
       </picture>
 
       {/* Main nav */}
-      <div className="sidebar-label">WORKSPACE</div>
+      <div className="sidebar-label">{translate("WORKSPACE")}</div>
       <nav>
-        {NAV.map(({ key, Icon, label }) => {
-          const badge = key === 'Smart inbox' ? data.emails.length : key === 'Risk radar' ? data.briefing.metrics.activeRisks : 0;
-          return (
+        {NAV.map(({ key, Icon, label }) => (
           <button
             key={key}
             className={`nav-btn ${state.page === key ? 'active' : ''}`}
             onClick={() => navigate(key)}
-            title={label}
+            title={translate(label)}
+            aria-label={translate(label)}
+            aria-current={state.page === key ? 'page' : undefined}
           >
             <Icon className="nav-icon" size={17} />
-            <span>{label}</span>
-            {badge ? <span className="nav-badge">{badge}</span> : null}
+            <span>{translate(label)}</span>
           </button>
-          );
-        })}
+        ))}
       </nav>
 
       {/* Bottom nav */}
-      <div className="sidebar-label" style={{ marginTop: 20 }}>ACCOUNT</div>
+      <div className="sidebar-label" style={{ marginTop: 20 }}>{translate("ACCOUNT")}</div>
       <nav>
         {BOTTOM_NAV.map(({ key, Icon, label }) => (
           <button
             key={key}
             className={`nav-btn ${state.page === key ? 'active' : ''}`}
             onClick={() => navigate(key)}
-            title={label}
+            title={translate(label)}
+            aria-label={translate(label)}
+            aria-current={state.page === key ? 'page' : undefined}
           >
             <Icon className="nav-icon" size={17} />
-            <span>{label}</span>
+            <span>{translate(label)}</span>
           </button>
         ))}
       </nav>
@@ -80,13 +83,13 @@ export default function Sidebar() {
       <div className="sidebar-footer">
         <div className="profile-block" onClick={() => navigate('Profile')}>
           {state.user.avatar ? (
-            <img src={state.user.avatar} alt="avatar" className="avatar" />
+            <img src={state.user.avatar} alt={translate("avatar")} className="avatar" />
           ) : (
             <div className="avatar">{initials}</div>
           )}
           <div>
             <div style={{ fontWeight: 650, fontSize: 13 }}>{state.user.name}</div>
-            <div className="muted" style={{ fontSize: 11 }}>{state.user.role || 'Demo account'}</div>
+            <div className="muted" style={{ fontSize: 11 }}>{state.user.role || translate("Demo account")}</div>
           </div>
         </div>
       </div>

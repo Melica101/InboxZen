@@ -19,7 +19,7 @@ const TABS = [
 ];
 
 export default function ProfilePage() {
-  const { state, setState, setNotice, resetDemo, toggleSetting, logout } = useApp();
+  const { t: translate, state, setState, setNotice, resetDemo, toggleSetting, logout } = useApp();
   const [tab, setTab]           = useState('general');
   const [saved, setSaved]       = useState(false);
   const [delConfirm, setDelConfirm] = useState(false);
@@ -52,19 +52,19 @@ export default function ProfilePage() {
     <div>
       {/* Header */}
       <div className="page-header">
-        <div className="eyebrow">ACCOUNT SETTINGS</div>
-        <h1 className="page-title">Your profile</h1>
-        <p className="page-desc">Manage your personal details, notifications, and privacy preferences.</p>
+        <div className="eyebrow">{translate("ACCOUNT SETTINGS")}</div>
+        <h1 className="page-title">{translate("Your profile")}</h1>
+        <p className="page-desc">{translate("Manage your personal details, notifications, and privacy preferences.")}</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 24, alignItems: 'start' }}>
+      <div className="profile-layout">
         {/* Left: avatar + tab nav */}
         <div className="stack" style={{ gap: 14 }}>
           {/* Avatar card */}
           <div className="card" style={{ textAlign: 'center', padding: 24 }}>
             <div style={{ position: 'relative', display: 'inline-block', marginBottom: 14 }}>
               {user.avatar ? (
-                <img src={user.avatar} alt="avatar" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--brand-blue-tint)' }} />
+                <img src={user.avatar} alt={translate("avatar")} style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--brand-blue-tint)' }} />
               ) : (
                 <div style={{
                   width: 80, height: 80, borderRadius: '50%',
@@ -84,14 +84,14 @@ export default function ProfilePage() {
                   width: 26, height: 26, display: 'grid', placeItems: 'center',
                   cursor: 'pointer',
                 }}
-                title="Change avatar"
+                title={translate("Change avatar")}
               >
                 <Camera size={12} />
               </button>
               <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
             </div>
             <div style={{ fontWeight: 700, fontSize: 15 }}>{user.name}</div>
-            <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>{user.role || 'Demo account'}</div>
+            <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>{user.role || translate("Demo account")}</div>
             <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>{user.email}</div>
           </div>
 
@@ -113,7 +113,7 @@ export default function ProfilePage() {
                 }}
               >
                 <Icon size={15} />
-                <span style={{ flex: 1 }}>{label}</span>
+                <span style={{ flex: 1 }}>{translate(label)}</span>
                 <ChevronRight size={13} style={{ opacity: .4 }} />
               </button>
             ))}
@@ -125,21 +125,21 @@ export default function ProfilePage() {
           {tab === 'general' && (
             <form onSubmit={handleSave}>
               <div className="card">
-                <h2>General information</h2>
+                <h2>{translate("General information")}</h2>
                 <div className="form-group" style={{ marginTop: 10 }}>
-                  <label className="form-label">Full name</label>
+                  <label className="form-label">{translate("Full name")}</label>
                   <input className="field" value={user.name} onChange={e => updateUser({ name: e.target.value })} required />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Email address</label>
+                  <label className="form-label">{translate("Email address")}</label>
                   <input className="field" type="email" value={user.email} onChange={e => updateUser({ email: e.target.value })} required />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Role / job title</label>
-                  <input className="field" placeholder="e.g. Product Manager" value={user.role || ''} onChange={e => updateUser({ role: e.target.value })} />
+                  <label className="form-label">{translate("Role / job title")}</label>
+                  <input className="field" placeholder={translate("e.g. Product Manager")} value={user.role || ''} onChange={e => updateUser({ role: e.target.value })} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Timezone</label>
+                  <label className="form-label">{translate("Timezone")}</label>
                   <select className="field" value={user.timezone} onChange={e => updateUser({ timezone: e.target.value })}>
                     {TIMEZONES.map(tz => <option key={tz}>{tz}</option>)}
                   </select>
@@ -147,7 +147,7 @@ export default function ProfilePage() {
                 <div className="row between" style={{ marginTop: 6 }}>
                   <div />
                   <button type="submit" className={`btn ${saved ? 'btn-success' : 'btn-primary'}`} style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 120 }}>
-                    {saved ? <><Check size={14} /> Saved!</> : 'Save changes'}
+                    {saved ? <><Check size={14} />{translate("Saved!")}</> : translate("Save changes")}
                   </button>
                 </div>
               </div>
@@ -156,8 +156,8 @@ export default function ProfilePage() {
 
           {tab === 'notifs' && (
             <div className="card">
-              <h2>Notification preferences</h2>
-              <p className="muted" style={{ marginBottom: 20 }}>Choose how InboxZen keeps you informed.</p>
+              <h2>{translate("Notification preferences")}</h2>
+              <p className="muted" style={{ marginBottom: 20 }}>{translate("Choose how InboxZen keeps you informed.")}</p>
               {[
                 { key: 'email',   label: 'Email digests',       desc: 'Receive a daily summary to your inbox.' },
                 { key: 'browser', label: 'Browser notifications', desc: 'Real-time alerts for high-priority items.' },
@@ -165,8 +165,8 @@ export default function ProfilePage() {
               ].map(({ key, label, desc }) => (
                 <div key={key} className="item row between">
                   <div>
-                    <h3>{label}</h3>
-                    <span className="muted">{desc}</span>
+                    <h3>{translate(label)}</h3>
+                    <span className="muted">{translate(desc)}</span>
                   </div>
                   <label className="switch">
                     <input
@@ -185,10 +185,8 @@ export default function ProfilePage() {
 
           {tab === 'privacy' && (
             <div className="card">
-              <h2>Privacy & data</h2>
-              <div className="privacy-note" style={{ marginBottom: 20 }}>
-                🔒 InboxZen never sells your data. Work and personal spaces are always processed separately.
-              </div>
+              <h2>{translate("Privacy & data")}</h2>
+              <div className="privacy-note" style={{ marginBottom: 20 }}>{translate("🔒 InboxZen never sells your data. Work and personal spaces are always processed separately.")}</div>
               {[
                 { label: 'Allow cross-workspace coordination', desc: 'Let the AI suggest availability hints between work and personal calendars.', key: 2 },
                 { label: 'Analyze work emails', desc: 'Extract commitments and risks from your work inbox.', key: 0 },
@@ -196,8 +194,8 @@ export default function ProfilePage() {
               ].map(({ label, desc, key }) => (
                 <div key={label} className="item row between">
                   <div>
-                    <h3>{label}</h3>
-                    <span className="muted">{desc}</span>
+                    <h3>{translate(label)}</h3>
+                    <span className="muted">{translate(desc)}</span>
                   </div>
                   <label className="switch">
                     <input
@@ -209,12 +207,14 @@ export default function ProfilePage() {
                   </label>
                 </div>
               ))}
-              <div className="item">
-                <h3>Export my data</h3>
-                <span className="muted">Download a JSON archive of all your InboxZen settings and activity.</span>
+              <div className="item row between profile-export">
+                <div>
+                  <h3>{translate("Export my data")}</h3>
+                  <span className="muted">{translate("Download a JSON archive of all your InboxZen settings and activity.")}</span>
+                </div>
                 <button
                   className="btn btn-secondary"
-                  style={{ marginTop: 10 }}
+                  type="button"
                   onClick={() => {
                     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
@@ -223,46 +223,41 @@ export default function ProfilePage() {
                     URL.revokeObjectURL(url);
                     setNotice('Data exported.');
                   }}
-                >
-                  Export data
-                </button>
+                >{translate("Export data")}</button>
               </div>
             </div>
           )}
 
           {tab === 'danger' && (
             <div className="card">
-              <h2>Danger zone</h2>
+              <h2>{translate("Danger zone")}</h2>
               <div className="item">
-                <h3>Reset demo</h3>
-                <span className="muted">Clears all demo state and returns everything to defaults.</span>
+                <h3>{translate("Reset demo")}</h3>
+                <span className="muted">{translate("Clears all demo state and returns everything to defaults.")}</span>
                 <div style={{ marginTop: 12 }}>
-                  <button className="btn btn-secondary" onClick={resetDemo}>Reset demo</button>
+                  <button className="btn btn-secondary" onClick={resetDemo}>{translate("Reset demo")}</button>
                 </div>
               </div>
               <div className="item">
-                <h3>Sign out</h3>
-                <span className="muted">End your session. </span>
+                <h3>{translate("Sign out")}</h3>
+                <span className="muted">{translate("End your session.")}</span>
                 <div style={{ marginTop: 12 }}>
                   <button className="btn btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: 6 }} onClick={() => logout()}>
-                    <LogOut size={14} /> Sign out
-                  </button>
+                    <LogOut size={14} />{translate("Sign out")}</button>
                 </div>
               </div>
               <div className="item">
-                <h3 style={{ color: '#c0404a' }}>Delete account</h3>
-                <span className="muted">Permanently delete your account and all associated data. This cannot be undone.</span>
+                <h3 style={{ color: '#c0404a' }}>{translate("Delete account")}</h3>
+                <span className="muted">{translate("Permanently delete your account and all associated data. This cannot be undone.")}</span>
                 <div style={{ marginTop: 12 }}>
                   {!delConfirm ? (
-                    <button className="btn btn-danger" onClick={() => setDelConfirm(true)}>Delete account</button>
+                    <button className="btn btn-danger" onClick={() => setDelConfirm(true)}>{translate("Delete account")}</button>
                   ) : (
                     <div style={{ background: '#fff5f5', border: '1.5px solid #fbd3d5', borderRadius: 11, padding: 16 }}>
-                      <p style={{ color: '#c0404a', fontWeight: 650, marginBottom: 10 }}>
-                        Are you sure? This action cannot be undone in a real app.
-                      </p>
+                      <p style={{ color: '#c0404a', fontWeight: 650, marginBottom: 10 }}>{translate("Are you sure? This action cannot be undone in a real app.")}</p>
                       <div className="row" style={{ gap: 10 }}>
-                        <button className="btn btn-danger" onClick={() => { setNotice('Account deletion is demo-only.'); setDelConfirm(false); }}>Yes, delete everything</button>
-                        <button className="btn btn-secondary" onClick={() => setDelConfirm(false)}>Cancel</button>
+                        <button className="btn btn-danger" onClick={() => { setNotice('Account deletion is demo-only.'); setDelConfirm(false); }}>{translate("Yes, delete everything")}</button>
+                        <button className="btn btn-secondary" onClick={() => setDelConfirm(false)}>{translate("Cancel")}</button>
                       </div>
                     </div>
                   )}

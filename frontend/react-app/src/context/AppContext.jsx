@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { api, getToken, setToken } from '../api.js';
+import { formatDemoDate, formatDemoDueDate, loadLanguage, translateMessage } from '../i18n/messages.js';
 
 const AppContext = createContext(null);
 const AUTONOMY = { 'Recommendations only': 'RECOMMENDATIONS_ONLY', 'Approval required': 'APPROVAL_REQUIRED' };
@@ -19,6 +20,7 @@ const INITIAL_STATE = {
     notifications: { email: true, browser: true, weekly: false },
     theme: 'light',
   },
+  analysis: {}, // AI summaries per space, from the last /ai/analyze run
   mailAccounts: [
     { id: 'ma-1', provider: 'gmail', label: 'Personal Gmail', email: 'alex.personal@example.com', space: 'Personal', status: 'connected', syncEnabled: true, lastSync: '2 min ago' },
     { id: 'ma-2', provider: 'outlook', label: 'Corporate Outlook', email: 'alex@company.example', space: 'Work', status: 'connected', syncEnabled: true, lastSync: '5 min ago' },
@@ -28,26 +30,41 @@ const INITIAL_STATE = {
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem('inboxzen-state') || '{}');
-    return { ...structuredClone(INITIAL_STATE), page: saved.page, space: saved.space, user: { ...INITIAL_STATE.user, ...saved.user }, mailAccounts: saved.mailAccounts || INITIAL_STATE.mailAccounts };
+    return { ...structuredClone(INITIAL_STATE), page: saved.page, space: saved.space, user: { ...INITIAL_STATE.user, ...saved.user }, mailAccounts: saved.mailAccounts || INITIAL_STATE.mailAccounts, analysis: saved.analysis || {} };
   } catch {
     return structuredClone(INITIAL_STATE);
   }
 }
 
 export function AppProvider({ children }) {
+  const [language, setLanguage] = useState(loadLanguage);
   const [local, setLocalRaw] = useState(() => {
     const s = loadState();
     return { ...s, page: s.page || INITIAL_STATE.page, space: s.space || INITIAL_STATE.space };
   });
   const [token, setTokenState] = useState(getToken());
   const [data, setData] = useState(null);
-  const [notice, setNotice] = useState('');
+  const [notice, setNoticeRaw] = useState(null);
   const [authErr, setAuthErr] = useState('');
   const [modal, setModal] = useState(null); // an AgentAction draft from the backend
   const [busy, setBusyState] = useState(false);
   const busyRef = useRef(false);
   const seq = useRef(0);
   const spaceRef = useRef(local.space);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    try {
+      localStorage.setItem('inboxzen-language', language);
+    } catch {
+      // The language remains available for the current session.
+    }
+  }, [language]);
+
+  const translate = useCallback((message, values) => translateMessage(language, message, values), [language]);
+  const setNotice = useCallback((message, values) => {
+    setNoticeRaw(message ? { message, values } : null);
+  }, []);
 
   const setState = useCallback((updater) => {
     setLocalRaw((prev) => {
@@ -132,6 +149,8 @@ export function AppProvider({ children }) {
     <AppContext.Provider value={{
       state, setState, data, token, login, logout, authErr, act, api,
       navigate, setSpace, resetDemo, toggleSetting, setMode,
+      language, setLanguage, t: translate, demoDate: formatDemoDate(language),
+      formatDueDate: due => formatDemoDueDate(language, due),
       notice, setNotice, modal, setModal, busy, visible,
     }}>
       {children}

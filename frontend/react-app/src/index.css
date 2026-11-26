@@ -382,6 +382,14 @@ label.form-label {
 }
 
 /* ─── List items ─────────────────────────────────────────────────── */
+.priority-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
 .item {
   padding: 14px 0;
   border-bottom: 1px solid #eeeef5;
@@ -482,3 +490,91 @@ label.form-label {
 .avatar-button { border: 1px solid var(--brand-blue-border); padding: 0; }
 .avatar-button:hover { border-color: var(--brand-primary); }
 .avatar-button > img { width: 100%; height: 100%; }
+
+/* Language control and localized layouts */
+.topbar { gap: 12px; }
+.topbar-tools { flex-shrink: 0; gap: 10px; }
+.language-control { position: relative; color: var(--brand-blue-ink); }
+.language-control svg {
+  position: absolute;
+  inset-inline-end: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.language-select {
+  appearance: none;
+  display: block;
+  color: inherit;
+  background: #fff;
+  border: 1px solid var(--brand-line);
+  border-radius: 8px;
+  min-height: 36px;
+  padding: 7px 32px 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.language-select:hover { background: var(--brand-blue-tint); }
+.language-select:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+.profile-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.profile-export { gap: 12px 20px; }
+.profile-export > .btn { flex-shrink: 0; }
+.modal { max-height: calc(100dvh - 32px); overflow-y: auto; }
+.toast span { min-width: 0; overflow-wrap: anywhere; }
+
+@media (max-width: 680px) {
+  .profile-layout { grid-template-columns: minmax(0, 1fr); }
+  .topbar .chip { display: none; }
+}
+@media (max-width: 480px) {
+  .topbar { height: auto; min-height: 68px; padding-block: 10px; flex-wrap: wrap; gap: 8px; }
+  .segment-btn { padding-inline: 8px; }
+  .topbar-tools { margin-left: auto; }
+  .profile-export { flex-direction: column; align-items: flex-start; }
+}
+
+.spin { display: inline-block; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .page-enter { animation: page-reveal 320ms cubic-bezier(.2,.7,.25,1) both; }
+  .page-enter .metric-card { animation: card-reveal 380ms cubic-bezier(.2,.7,.25,1) both; }
+  .page-enter .metric-card:nth-child(2) { animation-delay: 65ms; }
+  .page-enter .metric-card:nth-child(3) { animation-delay: 130ms; }
+  .hero::after { animation: hero-orbit 1.4s cubic-bezier(.2,.7,.25,1) both; }
+  .modal-backdrop { animation: fade-in 180ms ease-out both; }
+  .modal { animation: dialog-reveal 280ms cubic-bezier(.2,.72,.25,1.15) both; }
+  .toast { animation: card-reveal 260ms cubic-bezier(.2,.7,.25,1) both; }
+  .spin { animation: spin .9s linear infinite; }
+
+  .nav-icon { transition: transform 180ms ease-out; }
+  .nav-btn:hover .nav-icon { transform: translateX(2px); }
+}
+
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes page-reveal {
+  from { opacity: 0; }
+}
+@keyframes card-reveal {
+  from { opacity: 0; transform: translateY(12px); }
+}
+@keyframes hero-orbit {
+  from { opacity: .15; transform: translate(52px, -24px) scale(.85); }
+}
+@keyframes dialog-reveal {
+  from { opacity: 0; transform: translateY(12px) scale(.98); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-btn, .nav-icon, .btn, .segment-btn, .slider, .slider::before, .switch input {
+    transition: none;
+  }
+}
