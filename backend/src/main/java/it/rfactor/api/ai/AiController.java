@@ -19,12 +19,12 @@ import jakarta.validation.constraints.NotBlank;
 @RestController
 @RequestMapping("/api")
 public class AiController {
-    private final AzureClient azure;
+    private final GeminiClient gemini;
     private final AiService ai;
     private final Users users;
 
-    AiController(AzureClient azure, AiService ai, Users users) {
-        this.azure = azure; this.ai = ai; this.users = users;
+    AiController(GeminiClient gemini, AiService ai, Users users) {
+        this.gemini = gemini; this.ai = ai; this.users = users;
     }
 
     record ChatRequest(String system, @NotBlank String prompt) {}
@@ -37,8 +37,8 @@ public class AiController {
 
     /**
      * Prioritizes emails, extracts commitments and risks (with dependency chain), and stores them.
-     * One Azure request per space. Without `space`, every space enabled in settings is analyzed.
-     * `mode` is "live", or "demo" when Azure isn't configured (data left untouched).
+     * One Gemini request per space. Without `space`, every space enabled in settings is analyzed.
+     * `mode` is "live", or "demo" when Gemini isn't configured (data left untouched).
      */
     @PostMapping("/ai/analyze")
     java.util.List<AiService.Result> analyze(Principal p, @RequestParam(required = false) Space space) {
@@ -53,6 +53,6 @@ public class AiController {
     /** Raw LLM passthrough (not used by the app screens). */
     @PostMapping("/ai/chat")
     ChatResponse chat(@Valid @RequestBody ChatRequest req) {
-        return new ChatResponse(azure.chat(req.system(), req.prompt()));
+        return new ChatResponse(gemini.chat(req.system(), req.prompt()));
     }
 }
