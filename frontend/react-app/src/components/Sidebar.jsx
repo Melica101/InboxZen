@@ -23,7 +23,7 @@ const BOTTOM_NAV = [
 ];
 
 export default function Sidebar() {
-  const { state, navigate } = useApp();
+  const { t: translate, state, navigate } = useApp();
 
   const initials = state.user.name
     .split(' ')
@@ -41,34 +41,34 @@ export default function Sidebar() {
       </picture>
 
       {/* Main nav */}
-      <div className="sidebar-label">WORKSPACE</div>
+      <div className="sidebar-label">{translate("WORKSPACE")}</div>
       <nav>
         {NAV.map(({ key, Icon, label, badge }) => (
           <button
             key={key}
             className={`nav-btn ${state.page === key ? 'active' : ''}`}
             onClick={() => navigate(key)}
-            title={label}
+            title={translate(label)}
           >
             <Icon className="nav-icon" size={17} />
-            <span>{label}</span>
+            <span>{translate(label)}</span>
             {badge ? <span className="nav-badge">{badge}</span> : null}
           </button>
         ))}
       </nav>
 
       {/* Bottom nav */}
-      <div className="sidebar-label" style={{ marginTop: 20 }}>ACCOUNT</div>
+      <div className="sidebar-label" style={{ marginTop: 20 }}>{translate("ACCOUNT")}</div>
       <nav>
         {BOTTOM_NAV.map(({ key, Icon, label }) => (
           <button
             key={key}
             className={`nav-btn ${state.page === key ? 'active' : ''}`}
             onClick={() => navigate(key)}
-            title={label}
+            title={translate(label)}
           >
             <Icon className="nav-icon" size={17} />
-            <span>{label}</span>
+            <span>{translate(label)}</span>
           </button>
         ))}
       </nav>
@@ -77,13 +77,13 @@ export default function Sidebar() {
       <div className="sidebar-footer">
         <div className="profile-block" onClick={() => navigate('Profile')}>
           {state.user.avatar ? (
-            <img src={state.user.avatar} alt="avatar" className="avatar" />
+            <img src={state.user.avatar} alt={translate("avatar")} className="avatar" />
           ) : (
             <div className="avatar">{initials}</div>
           )}
           <div>
             <div style={{ fontWeight: 650, fontSize: 13 }}>{state.user.name}</div>
-            <div className="muted" style={{ fontSize: 11 }}>{state.user.role || 'Demo account'}</div>
+            <div className="muted" style={{ fontSize: 11 }}>{state.user.role || translate("Demo account")}</div>
           </div>
         </div>
       </div>

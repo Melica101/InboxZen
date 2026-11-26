@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext.jsx';
 import { TrendingUp, AlertTriangle, Clock } from 'lucide-react';
 
 export default function DailyBriefing() {
-  const { state, setState, setModal, setNotice, busy, setBusy, visible, navigate } = useApp();
+  const { t: translate, demoDate, state, setState, setNotice, busy, setBusy, visible } = useApp();
 
   const openTasks = state.tasks.filter(t => visible(t.space) && !t.done).length;
   const hasRisk   = visible('Work') && !state.resolved;
@@ -14,9 +14,9 @@ export default function DailyBriefing() {
     setNotice('');
     try {
       const emails = [
-        { id: 'W1', space: 'Work', from: 'Elena · Acme', subject: 'Final proposal by Friday', body: 'Please deliver the final proposal by November 27 to proceed with the €150,000 opportunity.', priority: 'Critical' },
-        { id: 'W2', space: 'Work', from: 'Marco · Engineering', subject: 'Proposal dependency', body: 'We cannot finish the proposal until IT delivers infrastructure specifications.', priority: 'Action required' },
-        { id: 'W3', space: 'Work', from: 'Luca · IT', subject: 'Infrastructure delay', body: 'Specifications will not be available until Monday, November 30.', priority: 'Risk signal' },
+      { id: 'W1', space: 'Work', from: 'Elena · Acme', subject: 'Final proposal by Friday', body: 'Please deliver the final proposal by November 27 to proceed with the €150,000 opportunity.', priority: 'Critical' },
+      { id: 'W2', space: 'Work', from: 'Marco · Engineering', subject: 'Proposal dependency', body: 'We cannot finish the proposal until IT delivers infrastructure specifications.', priority: 'Action required' },
+      { id: 'W3', space: 'Work', from: 'Luca · IT', subject: 'Infrastructure delay', body: 'Specifications will not be available until Monday, November 30.', priority: 'Risk signal' },
       ];
       let results = [];
       for (const [i, space] of ['Work', 'Personal'].entries()) {
@@ -32,9 +32,13 @@ export default function DailyBriefing() {
         results.push(j.mode);
         setState(s => ({ ...s, logs: [...s.logs, { space, text: `${j.mode === 'live' ? 'Live AI' : 'Demo'} analysis completed` }] }));
       }
-      setNotice(results.length ? `Analysis complete: ${results.join(', ')}.` : 'No enabled workspace to analyze.');
-    } catch (err) {
-      setNotice(err.message);
+      if (results.length) {
+        setNotice('Analysis complete: {results}.', { results });
+      } else {
+        setNotice('No enabled workspace to analyze.');
+      }
+    } catch {
+      setNotice('Analysis failed.');
     } finally {
       setBusy(false);
     }
@@ -44,18 +48,18 @@ export default function DailyBriefing() {
     <div>
       {/* Header */}
       <div className="page-header">
-        <div className="eyebrow">THURSDAY, NOVEMBER 26 · DEMO WORKSPACE</div>
-        <h1 className="page-title">Good morning, {state.user.name.split(' ')[0]}.</h1>
-        <p className="page-desc">A little less noise. A lot more clarity.</p>
+        <div className="eyebrow">{demoDate} · {translate("DEMO WORKSPACE")}</div>
+        <h1 className="page-title">{translate("Good morning, {name}.", { name: state.user.name.split(' ')[0] })}</h1>
+        <p className="page-desc">{translate("A little less noise. A lot more clarity.")}</p>
       </div>
 
       {/* Hero */}
       <div className="hero">
-        <div className="hero-eyebrow">✦ YOUR AI BRIEFING</div>
-        <h2>Here's what really matters today.</h2>
-        <p>{state.space === 'Personal' ? 'Your private appointments and commitments.' : 'Focus on decisions, not the inbox.'}</p>
+        <div className="hero-eyebrow">{translate("✦ YOUR AI BRIEFING")}</div>
+        <h2>{translate("Here's what really matters today.")}</h2>
+        <p>{state.space === 'Personal' ? translate("Your private appointments and commitments.") : translate("Focus on decisions, not the inbox.")}</p>
         <button className="btn btn-secondary" style={{ marginTop: 16 }} onClick={analyzeEmails} disabled={busy}>
-          {busy ? 'Analyzing…' : 'Analyze emails'}
+          {busy ? translate("Analyzing…") : translate("Analyze emails")}
         </button>
       </div>
 
@@ -63,24 +67,21 @@ export default function DailyBriefing() {
       <div className="grid-3" style={{ marginBottom: 20 }}>
         <div className="card metric-card">
           <div className="muted" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <CheckSquareIcon size={13} /> Open commitments
-          </div>
+            <CheckSquareIcon size={13} />{translate("Open commitments")}</div>
           <div className="metric-value">{openTasks}</div>
-          <div className="muted">Across selected spaces</div>
+          <div className="muted">{translate("Across selected spaces")}</div>
         </div>
         <div className="card metric-card">
           <div className="muted" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <AlertTriangle size={13} /> Active risks
-          </div>
+            <AlertTriangle size={13} />{translate("Active risks")}</div>
           <div className={`metric-value ${hasRisk ? 'red' : 'green'}`}>{hasRisk ? 1 : 0}</div>
-          <div className="muted">Dependency intelligence</div>
+          <div className="muted">{translate("Dependency intelligence")}</div>
         </div>
         <div className="card metric-card">
           <div className="muted" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Clock size={13} /> Time reclaimed
-          </div>
-          <div className="metric-value purple">25m</div>
-          <div className="muted">Illustrative estimate</div>
+            <Clock size={13} />{translate("Time reclaimed")}</div>
+          <div className="metric-value purple">{translate("25m")}</div>
+          <div className="muted">{translate("Illustrative estimate")}</div>
         </div>
       </div>
 
@@ -96,9 +97,7 @@ export default function DailyBriefing() {
         </div>
       </div>
 
-      <div className="privacy-note" style={{ marginTop: 20 }}>
-        ♧ Separate work and personal content. Only authorized availability is used for coordination.
-      </div>
+      <div className="privacy-note" style={{ marginTop: 20 }}>{translate("♧ Separate work and personal content. Only authorized availability is used for coordination.")}</div>
     </div>
   );
 }
@@ -110,7 +109,7 @@ function CheckSquareIcon({ size }) {
 }
 
 function RiskCard() {
-  const { state, setState, setModal, setNotice, navigate } = useApp();
+  const { t: translate, state, setState, setNotice, navigate } = useApp();
   const resolved = state.resolved;
   function simulateResolve() {
     setState(s => ({
@@ -123,23 +122,23 @@ function RiskCard() {
   }
   return (
     <div className="card">
-      <h2>Risk radar</h2>
+      <h2>{translate("Risk radar")}</h2>
       <div className="risk-block">
         <div className="row between" style={{ marginBottom: 8 }}>
-          <span className={`chip ${resolved ? 'green' : 'red'}`}>{resolved ? 'Mitigated' : 'High priority'}</span>
-          <span className="muted">3 linked emails</span>
+          <span className={`chip ${resolved ? 'green' : 'red'}`}>{resolved ? translate("Mitigated") : translate("High priority")}</span>
+          <span className="muted">{translate("3 linked emails")}</span>
         </div>
-        <h3 style={{ fontSize: 15, marginBottom: 4 }}>Acme contract {resolved ? 'back on track' : 'at risk'}</h3>
+        <h3 style={{ fontSize: 15, marginBottom: 4 }}>{translate(resolved ? "Acme contract back on track" : "Acme contract at risk")}</h3>
         <p className="muted" style={{ marginBottom: 12 }}>
-          {resolved ? 'IT confirmed earlier delivery.' : 'IT specifications are delayed beyond the client deadline.'}
+          {resolved ? translate("IT confirmed earlier delivery.") : translate("IT specifications are delayed beyond the client deadline.")}
         </p>
         <div className="row between">
-          <strong className={resolved ? 'green' : 'red'}>{resolved ? 'Risk reduced' : '€150,000 opportunity exposed'}</strong>
+          <strong className={resolved ? 'green' : 'red'}>{resolved ? translate("Risk reduced") : translate("€150,000 opportunity exposed")}</strong>
           <div className="row" style={{ gap: 8 }}>
             {!resolved && (
-              <button className="btn btn-secondary" style={{ fontSize: 11 }} onClick={simulateResolve}>Simulate IT fix</button>
+              <button className="btn btn-secondary" style={{ fontSize: 11 }} onClick={simulateResolve}>{translate("Simulate IT fix")}</button>
             )}
-            <button className="btn btn-link" onClick={() => navigate('Risk radar')}>View evidence →</button>
+            <button className="btn btn-link" onClick={() => navigate('Risk radar')}>{translate("View evidence →")}</button>
           </div>
         </div>
       </div>
@@ -148,13 +147,13 @@ function RiskCard() {
 }
 
 function CommitmentsCard() {
-  const { state, setState, visible } = useApp();
+  const { t: translate, state, setState, visible, formatDueDate } = useApp();
   const shown = state.tasks.filter(t => visible(t.space));
   return (
     <div className="card">
-      <h2>Your commitments</h2>
-      {shown.length === 0 && <p className="muted" style={{ padding: '20px 0', textAlign: 'center' }}>No commitments.</p>}
-      {shown.map((t, ri) => {
+      <h2>{translate("Your commitments")}</h2>
+      {shown.length === 0 && <p className="muted" style={{ padding: '20px 0', textAlign: 'center' }}>{translate("No commitments.")}</p>}
+      {shown.map(t => {
         const i = state.tasks.indexOf(t);
         return (
           <div key={t.title} className="item row">
@@ -165,11 +164,11 @@ function CommitmentsCard() {
               onChange={() => setState(s => ({ ...s, tasks: s.tasks.map((x, j) => j === i ? { ...x, done: !x.done } : x) }))}
             />
             <div style={{ flex: 1 }}>
-              <h3 style={t.done ? { textDecoration: 'line-through', opacity: .5 } : {}}>{t.title}</h3>
-              <span className="muted">{t.space} · {t.due} · {t.owner}</span>
+              <h3 style={t.done ? { textDecoration: 'line-through', opacity: .5 } : {}}>{translate(t.title)}</h3>
+              <span className="muted">{translate(t.space)} · {formatDueDate(t.due)} · {translate(t.owner)}</span>
             </div>
             <span className={`chip ${t.done ? 'green' : t.status === 'Blocked' ? 'red' : ''}`}>
-              {t.done ? 'Done' : t.status}
+              {t.done ? translate("Done") : translate(t.status)}
             </span>
           </div>
         );
@@ -179,27 +178,25 @@ function CommitmentsCard() {
 }
 
 function ScheduleCard() {
-  const { state, setModal, visible } = useApp();
+  const { t: translate, state, setModal, visible } = useApp();
   return (
     <div className="card">
-      <h2>Your schedule</h2>
+      <h2>{translate("Your schedule")}</h2>
       {visible('Work') && <>
-        <div className="item"><span className="muted">10:00–10:30</span><h3>Product alignment</h3></div>
-        <div className="item"><span className="muted">{state.moved ? '16:30–17:30' : '15:00–16:00'}</span><h3>Acme presentation</h3></div>
+        <div className="item"><span className="muted">10:00–10:30</span><h3>{translate("Product alignment")}</h3></div>
+        <div className="item"><span className="muted">{state.moved ? '16:30–17:30' : '15:00–16:00'}</span><h3>{translate("Acme presentation")}</h3></div>
       </>}
       {visible('Personal') && (
-        <div className="item"><span className="muted">15:00–15:30</span><h3>Private appointment 🔒</h3></div>
+        <div className="item"><span className="muted">15:00–15:30</span><h3>{translate("Private appointment 🔒")}</h3></div>
       )}
       {state.space === 'All' && state.settings[2] && (
         <div className="email-tile" style={{ marginTop: 10 }}>
-          <h3>{state.moved ? '✓ Conflict resolved' : 'Calendar conflict'}</h3>
+          <h3>{state.moved ? translate("✓ Conflict resolved") : translate("Calendar conflict")}</h3>
           <p className="muted" style={{ marginBottom: 8 }}>
-            {state.moved ? 'Meeting moved in demo.' : 'A work meeting overlaps a private appointment.'}
+            {state.moved ? translate("Meeting moved in demo.") : translate("A work meeting overlaps a private appointment.")}
           </p>
           {!state.moved && (
-            <button className="btn btn-link" style={{ padding: 0 }} onClick={() => setModal('conflict')}>
-              Resolve privately →
-            </button>
+            <button className="btn btn-link" style={{ padding: 0 }} onClick={() => setModal('conflict')}>{translate("Resolve privately →")}</button>
           )}
         </div>
       )}
@@ -208,20 +205,18 @@ function ScheduleCard() {
 }
 
 function AgentActionsCard() {
-  const { state, setModal } = useApp();
+  const { t: translate, state, setModal } = useApp();
   return (
     <div className="card">
-      <h2>Agent actions</h2>
+      <h2>{translate("Agent actions")}</h2>
       <div className="item">
-        <h3>{state.approved ? '✓ Escalation approved' : 'Follow-up ready'}</h3>
-        <p className="muted">Engineering + IT</p>
+        <h3>{state.approved ? translate("✓ Escalation approved") : translate("Follow-up ready")}</h3>
+        <p className="muted">{translate("Engineering + IT")}</p>
         {!state.approved && (
-          <button className="btn btn-secondary" style={{ marginTop: 8 }} onClick={() => setModal('escalate')}>
-            Review draft
-          </button>
+          <button className="btn btn-secondary" style={{ marginTop: 8 }} onClick={() => setModal('escalate')}>{translate("Review draft")}</button>
         )}
       </div>
-      <div className="muted" style={{ marginTop: 8 }}>{state.mode}</div>
+      <div className="muted" style={{ marginTop: 8 }}>{translate(state.mode)}</div>
     </div>
   );
 }

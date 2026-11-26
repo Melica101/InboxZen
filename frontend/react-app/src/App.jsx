@@ -37,7 +37,9 @@ function AppShell() {
       <div className="main-content">
         <Topbar />
         <main className="page-body">
-          <PageComponent />
+          <div className="page-enter" key={state.page}>
+            <PageComponent />
+          </div>
         </main>
       </div>
       <ActionModal />

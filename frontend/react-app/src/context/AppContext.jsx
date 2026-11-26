@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+
+import { formatDemoDate, formatDemoDueDate, loadLanguage, translateMessage } from '../i18n/messages.js';
 
 const AppContext = createContext(null);
 
@@ -48,10 +50,25 @@ function loadState() {
 }
 
 export function AppProvider({ children }) {
+  const [language, setLanguage] = useState(loadLanguage);
   const [state, setStateRaw] = useState(loadState);
-  const [notice, setNotice] = useState('');
+  const [notice, setNoticeRaw] = useState(null);
   const [modal, setModal] = useState('');
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    try {
+      localStorage.setItem('inboxzen-language', language);
+    } catch {
+      // The language remains available for the current session.
+    }
+  }, [language]);
+
+  const translate = useCallback((message, values) => translateMessage(language, message, values), [language]);
+  const setNotice = useCallback((message, values) => {
+    setNoticeRaw(message ? { message, values } : null);
+  }, []);
 
   const setState = useCallback((updater) => {
     setStateRaw((prev) => {
@@ -86,6 +103,8 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider value={{
       state, setState, navigate, setSpace, resetDemo,
+      language, setLanguage, t: translate, demoDate: formatDemoDate(language),
+      formatDueDate: due => formatDemoDueDate(language, due),
       notice, setNotice, modal, setModal, busy, setBusy,
       visible,
     }}>

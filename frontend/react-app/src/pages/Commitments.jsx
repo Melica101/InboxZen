@@ -2,20 +2,20 @@ import React from 'react';
 import { useApp } from '../context/AppContext.jsx';
 
 export default function Commitments() {
-  const { state, setState, visible } = useApp();
+  const { t: translate, demoDate, state, setState, visible, formatDueDate } = useApp();
   const shown = state.tasks.filter(t => visible(t.space));
 
   return (
     <div>
       <div className="page-header">
-        <div className="eyebrow">THURSDAY, NOVEMBER 26 · DEMO WORKSPACE</div>
-        <h1 className="page-title">Commitment center</h1>
-        <p className="page-desc">Every promise, owner and deadline in one place.</p>
+        <div className="eyebrow">{demoDate} · {translate("DEMO WORKSPACE")}</div>
+        <h1 className="page-title">{translate("Commitment center")}</h1>
+        <p className="page-desc">{translate("Every promise, owner and deadline in one place.")}</p>
       </div>
 
       <div className="card">
-        <h2>Commitments</h2>
-        {shown.length === 0 && <p className="muted" style={{ padding: '20px 0', textAlign: 'center' }}>No commitments.</p>}
+        <h2>{translate("Commitments")}</h2>
+        {shown.length === 0 && <p className="muted" style={{ padding: '20px 0', textAlign: 'center' }}>{translate("No commitments.")}</p>}
         {shown.map((t) => {
           const i = state.tasks.indexOf(t);
           return (
@@ -30,11 +30,11 @@ export default function Commitments() {
                 }))}
               />
               <div style={{ flex: 1 }}>
-                <h3 style={t.done ? { textDecoration: 'line-through', opacity: .5 } : {}}>{t.title}</h3>
-                <span className="muted">{t.space} · {t.due} · {t.owner}</span>
+                <h3 style={t.done ? { textDecoration: 'line-through', opacity: .5 } : {}}>{translate(t.title)}</h3>
+                <span className="muted">{translate(t.space)} · {formatDueDate(t.due)} · {translate(t.owner)}</span>
               </div>
               <span className={`chip ${t.done ? 'green' : t.status === 'Blocked' ? 'red' : ''}`}>
-                {t.done ? 'Done' : t.status}
+                {t.done ? translate("Done") : translate(t.status)}
               </span>
             </div>
           );
