@@ -28,8 +28,8 @@ def call(api, path, body=None, token=None, method="POST"):
 
 def main():
     a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    a.add_argument("--email", default="demo@inboxzen.dev")
-    a.add_argument("--password", default="password123")
+    a.add_argument("--email", default="demo@inboxzen.test")
+    a.add_argument("--password", default="test")
     a.add_argument("--count", type=int, default=200, help="1-1000 (default 200)")
     a.add_argument("--api", default="http://localhost:8080")
     args = a.parse_args()
