@@ -18,7 +18,7 @@ export default function SmartInbox() {
     <div>
       <div className="page-header">
         <div className="eyebrow">{demoDate} · {translate("DEMO WORKSPACE")}</div>
-        <h1 className="page-title">{translate("Smart inbox")}</h1>
+        <h1 className="page-title">{translate("Smart Inbox")}</h1>
         <p className="page-desc">{translate("Priorities based on business impact and deadlines.")}</p>
       </div>
 

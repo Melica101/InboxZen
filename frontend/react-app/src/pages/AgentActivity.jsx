@@ -9,7 +9,7 @@ export default function AgentActivity() {
     <div>
       <div className="page-header">
         <div className="eyebrow">{demoDate} · {translate("DEMO WORKSPACE")}</div>
-        <h1 className="page-title">{translate("Agent activity")}</h1>
+        <h1 className="page-title">{translate("Activity & Alert Center")}</h1>
         <p className="page-desc">{translate("Review every simulated action.")}</p>
       </div>
 

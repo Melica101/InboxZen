@@ -15,7 +15,14 @@ import PrivacyCenter from './pages/PrivacyCenter.jsx';
 import ConnectMail   from './pages/ConnectMail.jsx';
 import ProfilePage   from './pages/ProfilePage.jsx';
 
+import PriorityEngine from './pages/PriorityEngine.jsx';
+import EmailSummary from './pages/EmailSummary.jsx';
+import ReplyDrafts from './pages/ReplyDrafts.jsx';
+
 const PAGES = {
+  'Priority Engine': PriorityEngine,
+  'AI Email Summary': EmailSummary,
+  'AI Reply Drafts': ReplyDrafts,
   'Daily briefing': DailyBriefing,
   'Smart inbox':    SmartInbox,
   'Commitments':    Commitments,
