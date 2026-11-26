@@ -1,4 +1,4 @@
-package it.rfactor.api;
+package it.rfactor.api.ai;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

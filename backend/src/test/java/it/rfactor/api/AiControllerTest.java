@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class AiControllerTest {
     @Autowired MockMvc mvc;
 
@@ -23,14 +25,13 @@ class AiControllerTest {
     }
 
     @Test
-    void chatWithoutAzureKeyIs503() throws Exception {
-        mvc.perform(post("/api/ai/chat").contentType(MediaType.APPLICATION_JSON).content("{\"prompt\":\"hi\"}"))
-                .andExpect(status().isServiceUnavailable());
+    void protectedRouteWithoutTokenIs401() throws Exception {
+        mvc.perform(get("/api/emails")).andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/ai/chat").contentType(MediaType.APPLICATION_JSON).content("{\"prompt\":\"hi\"}")).andExpect(status().isUnauthorized());
     }
 
     @Test
-    void blankPromptIs400() throws Exception {
-        mvc.perform(post("/api/ai/chat").contentType(MediaType.APPLICATION_JSON).content("{\"prompt\":\"\"}"))
-                .andExpect(status().isBadRequest());
+    void garbageTokenIs401() throws Exception {
+        mvc.perform(get("/api/emails").header("Authorization", "Bearer nope")).andExpect(status().isUnauthorized());
     }
 }

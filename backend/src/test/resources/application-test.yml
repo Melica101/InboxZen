@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:inboxzen-test;DB_CLOSE_DELAY=-1
+app:
+  jwt-secret: test-secret-test-secret-test-secret-123
+  seed-volume: 0
